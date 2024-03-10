@@ -1,7 +1,7 @@
 package com.clementcorporation.empowerexample
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.clementcorporation.empowerexample.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {

@@ -4,45 +4,51 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.RelativeLayout
-import android.widget.TableRow
-import android.widget.TextView
-import androidx.compose.ui.Modifier
 import androidx.fragment.app.Fragment
-import com.clementcorporation.empowerexample.R
+import com.clementcorporation.empowerexample.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
 
+    private lateinit var binding: FragmentMainBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_main, container, false)
-        container?.let {
-            renderTreeChart(listOf(3,2,4,1), it)
-        }
-        return view
+        binding = FragmentMainBinding.inflate(inflater)
+        renderTreeChart(listOf(3,2,4,1), binding.mainLayout)
+        return binding.root
     }
 
     private fun renderTreeChart(list: List<Int>, parent: ViewGroup) {
-        val height = parent.height
-        val width  = parent.width
-        val sum = list.sum()
-        var divideVertically = true
-        var x = 0
-        var y = 0
-        list.forEachIndexed { index, weight ->
-            val params = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-            params.leftMargin = x
-            params.topMargin = y
-            val textView = TextView(requireContext()).apply {
-                text = "This text"
+        val colors = listOf(
+            requireContext().getColor(android.R.color.holo_red_dark),
+            requireContext().getColor(android.R.color.holo_blue_dark),
+            requireContext().getColor(android.R.color.holo_green_dark),
+            requireContext().getColor(android.R.color.black),
+            requireContext().getColor(android.R.color.holo_purple),
+            requireContext().getColor(android.R.color.holo_orange_dark)
+        )
+        parent.viewTreeObserver.addOnGlobalLayoutListener {
+            var height = parent.height
+            var width = parent.width
+            var divideVertically = true
+            var colorsIndex = 0
+            val subView = RelativeLayout(requireContext()).apply {
+                setBackgroundColor(colors[colorsIndex])
+                layoutParams = RelativeLayout.LayoutParams(width, height)
             }
-            parent.addView(textView, params)
-            if (divideVertically) x = width / 2
-            if (!divideVertically) y = height / 2
-            divideVertically = index % 3 != 0
+            parent.addView(subView)
+            list.forEach { _ ->
+                if (divideVertically) width /= 2
+                else height /= 2
+                divideVertically = !divideVertically
+                if (colorsIndex > colors.size - 1) colorsIndex = 0 else colorsIndex++
+                subView.addView(RelativeLayout(requireContext()).apply {
+                    setBackgroundColor(colors[colorsIndex])
+                    layoutParams = RelativeLayout.LayoutParams(width, height)
+                })
+            }
         }
     }
 }
